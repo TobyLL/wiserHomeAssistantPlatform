@@ -21,12 +21,12 @@ from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_SCAN_INTERVAL, CO
 _LOGGER = logging.getLogger(__name__)
 NOTIFICATION_ID = 'wiser_notification'
 NOTIFICATION_TITLE = 'Wiser Component Setup'
-CONF_BOOST_TEMP_DEFAULT = "20"
-CONF_BOOST_TEMP = "boost_temp"
+CONF_BOOST_TEMP_DEFAULT = '20'
+CONF_BOOST_TEMP = 'boost_temp'
 CONF_BOOST_TEMP_TIME = 'boost_time'
 
-DOMAIN = 'wiser'
-DATA_KEY = 'wiser'
+DOMAIN = 'wiser_heating'
+DATA_KEY = 'wiser_heating'
 
 PLATFORM_SCHEMA = vol.Schema({
     vol.Required(CONF_HOST): cv.string,
@@ -67,7 +67,7 @@ class WiserHubHandle:
         self.scan_interval = scan_interval
         self.ip = ip
         self.secret = secret
-        self.wiserHubInstance = None
+        self.wiser_hub_instance = None
         self.mutex = Lock()
         self.minimum_temp = minimum_temp
         self._updatets = time.time()
@@ -78,9 +78,9 @@ class WiserHubHandle:
 
     def get_hub_data(self):
         from wiserHeatingAPI import wiserHub
-        if self.wiserHubInstance is None:
-            self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
-        return self.wiserHubInstance
+        if self.wiser_hub_instance is None:
+            self.wiser_hub_instance = wiserHub.wiserHub(self.ip, self.secret)
+        return self.wiser_hub_instance
 
     def get_minimum_temp(self):
         return self.minimum_temp
@@ -88,15 +88,15 @@ class WiserHubHandle:
     def update(self):
         _LOGGER.info("Update Requested")
         from wiserHeatingAPI import wiserHub
-        if self.wiserHubInstance is None:
-            self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
+        if self.wiser_hub_instance is None:
+            self.wiser_hub_instance = wiserHub.wiserHub(self.ip, self.secret)
         with self.mutex:
             if (time.time() - self._updatets) >= self.scan_interval:
                 _LOGGER.debug("*********************************************************************")
                 _LOGGER.info("Scan Interval exceeded, updating Wiser DataSet from hub")
                 _LOGGER.debug("*********************************************************************")
                 try:
-                    self.wiserHubInstance.refreshData()
+                    self.wiser_hub_instance.refreshData()
                 except timeout as timeoutex:
                     _LOGGER.error("Timed out whilst connecting to {}, with error {}".format(self.ip, str(timeoutex)))
                     hass.components.persistent_notification.create(
@@ -119,16 +119,16 @@ class WiserHubHandle:
     def set_room_temperature(self, room_id, target_temperature):
         _LOGGER.info("set {} to {}".format(room_id, target_temperature))
         from wiserHeatingAPI import wiserHub
-        if self.wiserHubInstance is None:
-            self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
+        if self.wiser_hub_instance is None:
+            self.wiser_hub_instance = wiserHub.wiserHub(self.ip, self.secret)
         with self.mutex:
-            self.wiserHubInstance.set_room_temperature(room_id, target_temperature)
+            self.wiser_hub_instance.set_room_temperature(room_id, target_temperature)
             return True
 
     def set_room_mode(self, room_id, mode):
         from wiserHeatingAPI import wiserHub
-        if self.wiserHubInstance is None:
-            self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
+        if self.wiser_hub_instance is None:
+            self.wiser_hub_instance = wiserHub.wiserHub(self.ip, self.secret)
         with self.mutex:
-            self.wiserHubInstance.set_room_mode(room_id, mode, self.boost_temp, self.boost_time)
+            self.wiser_hub_instance.set_room_mode(room_id, mode, self.boost_temp, self.boost_time)
             return True
