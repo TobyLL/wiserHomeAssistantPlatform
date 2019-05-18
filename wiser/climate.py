@@ -13,7 +13,7 @@ import logging
 from homeassistant.components.climate import ClimateDevice
 from homeassistant.components.climate.const import (STATE_AUTO, SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, ATTR_BATTERY_LEVEL
-from homeassistant.helpers.entity import Entity
+
 
 _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'wiser'
@@ -128,5 +128,3 @@ class WiserRoom(ClimateDevice):
         _LOGGER.debug("*******Setting Device Operation {} for roomId {}".format(operation_mode, self.roomId))
         self.handler.set_room_mode(self.roomId, operation_mode)
         return True
-
-

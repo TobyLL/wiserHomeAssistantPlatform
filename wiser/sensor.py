@@ -74,6 +74,7 @@ class WiserDevice(Entity):
             return icon_list[self.handler.get_hub_data().getDevice(self.deviceId).get("DisplayedSignalStrength")]
         except KeyError as ex:
             # Handle anything else as no signal
+            _LOGGER.info("Wifi not present ".format(ex))
             return 'mdi:wifi-strength-alert-outline'
 
     @property

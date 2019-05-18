@@ -100,7 +100,7 @@ class WiserHubHandle:
                 except timeout as timeoutex:
                     _LOGGER.error("Timed out whilst connecting to {}, with error {}".format(self.ip, str(timeoutex)))
                     hass.components.persistent_notification.create(
-                        "Error: {}<br /> You will need to restart Home Assistant after fixing.".format(ex),
+                        "Error: {}<br /> You will need to restart Home Assistant after fixing.".format(timeoutex),
                         title=NOTIFICATION_TITLE, notification_id=NOTIFICATION_ID)
                     return False
                 except json.decoder.JSONDecodeError as JSONex:
@@ -108,7 +108,7 @@ class WiserHubHandle:
                         "Data not JSON when getting Data from hub, did you enter the right URL? error {}".format(
                             str(JSONex)))
                     hass.components.persistent_notification.create(
-                        "Error: {}<br /> You will need to restart Home Assistant after fixing.".format(ex),
+                        "Error: {}<br /> You will need to restart Home Assistant after fixing.".format(JSONex),
                         title=NOTIFICATION_TITLE, notification_id=NOTIFICATION_ID)
                     return False
                 self._updatets = time.time()
