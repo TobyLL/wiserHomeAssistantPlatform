@@ -31,7 +31,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     wiser_rooms = []
 
     # Get Rooms
-    for room in handler.getHubData().getRooms():
+    for room in handler.get_hub_data().getRooms():
         wiser_rooms.append(WiserRoom(room.get('id'), handler))
     add_devices(wiser_rooms)
 
@@ -58,11 +58,11 @@ class WiserRoom(ClimateDevice):
     @property
     def state(self):
         _LOGGER.info('State requested for room %s', self.roomId)
-        return self.handler.getHubData().getRoom(self.roomId).get("Mode")
+        return self.handler.get_hub_data().getRoom(self.roomId).get("Mode")
 
     @property
     def name(self):
-        return "Wiser "+self.handler.getHubData().getRoom(self.roomId).get("Name")
+        return "Wiser "+self.handler.get_hub_data().getRoom(self.roomId).get("Name")
 
     @property
     def temperature_unit(self):
@@ -70,11 +70,11 @@ class WiserRoom(ClimateDevice):
 
     @property
     def current_temperature(self):
-        temp = self.handler.getHubData().getRoom(self.roomId).get("CalculatedTemperature")/10
-        if temp < self.handler.getMinimumTemp():
+        temp = self.handler.get_hub_data().getRoom(self.roomId).get("CalculatedTemperature") / 10
+        if temp < self.handler.get_minimum_temp():
             # Sometimes we get really low temps (like -3000!), not sure why,
             # if we do then just set it to -20 for now till i debug this.
-            temp = self.handler.getMinimumTemp()
+            temp = self.handler.get_minimum_temp()
         return temp 
 
     @property
@@ -83,11 +83,11 @@ class WiserRoom(ClimateDevice):
 
     @property
     def current_operation(self):
-        return self.handler.getHubData().getRoom(self.roomId).get("Mode")
+        return self.handler.get_hub_data().getRoom(self.roomId).get("Mode")
 
     @property
     def target_temperature(self):
-        return self.handler.getHubData().getRoom(self.roomId).get("CurrentSetPoint")/10
+        return self.handler.get_hub_data().getRoom(self.roomId).get("CurrentSetPoint") / 10
     
     @property
     def operation_list(self):
@@ -105,11 +105,11 @@ class WiserRoom(ClimateDevice):
     def state_attributes(self):
         # Generic attributes
         attrs = super().state_attributes
-        attrs['percentage_demand'] = self.handler.getHubData().getRoom(self.roomId).get("PercentageDemand")
-        attrs['heating_rate'] = self.handler.getHubData().getRoom(self.roomId).get("HeatingRate")
-        attrs['window_state'] = self.handler.getHubData().getRoom(self.roomId).get("WindowState")
-        attrs['window_detection_active'] = self.handler.getHubData().getRoom(self.roomId).get("WindowDetectionActive")
-        attrs['away_mode_supressed'] = self.handler.getHubData().getRoom(self.roomId).get("AwayModeSuppressed")
+        attrs['percentage_demand'] = self.handler.get_hub_data().getRoom(self.roomId).get("PercentageDemand")
+        attrs['heating_rate'] = self.handler.get_hub_data().getRoom(self.roomId).get("HeatingRate")
+        attrs['window_state'] = self.handler.get_hub_data().getRoom(self.roomId).get("WindowState")
+        attrs['window_detection_active'] = self.handler.get_hub_data().getRoom(self.roomId).get("WindowDetectionActive")
+        attrs['away_mode_supressed'] = self.handler.get_hub_data().getRoom(self.roomId).get("AwayModeSuppressed")
         return attrs 
 
     # Set temperature
@@ -121,12 +121,12 @@ class WiserRoom(ClimateDevice):
         _LOGGER.debug("Setting Device Temperature for roomId {}, temperature {}".
                       format(self.roomId, target_temperature))
         _LOGGER.debug("Value of wiserhub {}".format(self.handler))
-        self.handler.setRoomTemperature(self.roomId, target_temperature)
+        self.handler.set_room_temperature(self.roomId, target_temperature)
         
     def set_operation_mode(self, operation_mode):
         """Set new operation mode."""
         _LOGGER.debug("*******Setting Device Operation {} for roomId {}".format(operation_mode, self.roomId))
-        self.handler.setRoomMode(self.roomId, operation_mode)
+        self.handler.set_room_mode(self.roomId, operation_mode)
         return True
 
 

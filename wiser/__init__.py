@@ -76,13 +76,13 @@ class WiserHubHandle:
 
         _LOGGER.info("min temp = {}".format(self.minimum_temp))
 
-    def getHubData(self):
+    def get_hub_data(self):
         from wiserHeatingAPI import wiserHub
         if self.wiserHubInstance is None:
             self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
         return self.wiserHubInstance
 
-    def getMinimumTemp(self):
+    def get_minimum_temp(self):
         return self.minimum_temp
 
     def update(self):
@@ -116,19 +116,19 @@ class WiserHubHandle:
             else:
                 _LOGGER.info("Skipping update (data already gotten within scan interval)")
 
-    def setRoomTemperature(self, room_id, target_temperature):
+    def set_room_temperature(self, room_id, target_temperature):
         _LOGGER.info("set {} to {}".format(room_id, target_temperature))
         from wiserHeatingAPI import wiserHub
         if self.wiserHubInstance is None:
             self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
         with self.mutex:
-            self.wiserHubInstance.setRoomTemperature(room_id, target_temperature)
+            self.wiserHubInstance.set_room_temperature(room_id, target_temperature)
             return True
 
-    def setRoomMode(self, room_id, mode):
+    def set_room_mode(self, room_id, mode):
         from wiserHeatingAPI import wiserHub
         if self.wiserHubInstance is None:
             self.wiserHubInstance = wiserHub.wiserHub(self.ip, self.secret)
         with self.mutex:
-            self.wiserHubInstance.setRoomMode(room_id, mode, self.boost_temp, self.boost_time)
+            self.wiserHubInstance.set_room_mode(room_id, mode, self.boost_temp, self.boost_time)
             return True
